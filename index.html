@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111111" />
+  <title>QR 메뉴</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --ink:#111111;
+      --muted:#666666;
+      --line:#e9e9e9;
+      --card:#fafafa;
+      --accent:#111111;
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit}
+    .wrap{
+      max-width:760px;
+      margin:0 auto;
+      padding:18px 16px 60px;
+    }
+    header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:saturate(180%) blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .topbar{
+      max-width:760px;
+      margin:0 auto;
+      padding:12px 16px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .brand{
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .brand .title{font-weight:800; letter-spacing:-0.3px}
+    .brand .sub{font-size:12px; color:var(--muted)}
+    .badge{
+      font-size:12px;
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#fff;
+      white-space:nowrap;
+    }
+    .nav{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      padding:10px 16px 14px;
+      border-top:1px solid var(--line);
+    }
+    .chip{
+      flex:0 0 auto;
+      font-size:13px;
+      padding:9px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#fff;
+      text-decoration:none;
+    }
+    .chip:active{transform:scale(.98)}
+    .hero{
+      margin-top:14px;
+      padding:16px;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:linear-gradient(180deg,#fff, #fbfbfb);
+    }
+    .hero h2{
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:-0.3px;
+    }
+    .hero p{margin:0; color:var(--muted); font-size:13px; line-height:1.45}
+    .section{
+      margin-top:18px;
+    }
+    .section h3{
+      margin:0 0 10px;
+      font-size:16px;
+      letter-spacing:-0.2px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .section h3 .hint{font-size:12px; color:var(--muted); font-weight:500}
+    .cards{
+      display:grid;
+      gap:10px;
+    }
+    .card{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:var(--card);
+      padding:14px 14px;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+    .name{
+      font-weight:750;
+      letter-spacing:-0.2px;
+      line-height:1.3;
+    }
+    .desc{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .price{
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .meta{
+      margin-top:10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .pill{
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
+      background:#fff;
+    }
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    @media (min-width:640px){
+      .grid2{grid-template-columns:1fr 1fr;}
+    }
+    details{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:#fff;
+      overflow:hidden;
+    }
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding:14px 14px;
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    summary::-webkit-details-marker{display:none}
+    .details-body{padding:0 14px 14px}
+    .list{
+      display:grid;
+      gap:8px;
+    }
+    .item{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:var(--card);
+    }
+    .item .left{
+      min-width:0;
+    }
+    .item .left .name{font-weight:700}
+    .item .left .desc{margin-top:2px}
+    footer{
+      margin-top:26px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.55;
+      border-top:1px solid var(--line);
+      padding-top:14px;
+    }
+    @media print{
+      header{position:static}
+      .nav{display:none}
+      body{background:#fff}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="brand">
+        <div class="title">노크에스티</div>
+        
+      </div>
+      
+    </div>
+    <nav class="nav" aria-label="카테고리">
+      <a class="chip" href="#best">BEST</a>
+      <a class="chip" href="#coffee">커피</a>
+      <a class="chip" href="#noncoffee">논커피</a>
+      <a class="chip" href="#tea">티</a>
+      <a class="chip" href="#shake">쉐이크/스무디</a>
+      <a class="chip" href="#juice">주스</a>
+      <a class="chip" href="#dessert">디저트</a>
+      <a class="chip" href="#food">식사/분식</a>
+      </nav>
+  </header>
+
+  <main class="wrap">
+<!-- BEST -->
+    <section class="section" id="best">
+      <h3>⭐ BEST / SIGNATURE <span class="hint">포크와플 (1.5인분)</span></h3>
+      <div class="cards">
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="name">눈꽃슈가 포크와플</div>
+              <div class="desc">가볍게 먹기 좋은</div>
+            </div>
+            <div class="price">5,900</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="name">초코폭포 포크와플</div>
+              <div class="desc">진한 초코 토핑</div>
+            </div>
+            <div class="price">7,500</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="name">초코소프트 포크와플</div>
+                <div class="desc">부드러운 초코 + 식감</div>
+              </div>
+              <div class="price">8,500</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="row">
+              <div>
+                <div class="name">더블초코 포크와플</div>
+                <div class="desc">초코를 더 진하게</div>
+              </div>
+              <div class="price">8,500</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="name">딸기 톡톡 포크와플</div>
+              <div class="desc">시그니처 · 달콤상큼</div>
+            </div>
+            <div class="price">9,500</div>
+          </div>
+        </div></div>
+      <div class="meta">
+        <span class="pill">※ 가격 단위: 원</span>
+        <span class="pill">※ 포크와플은 1.5인분 기준</span>
+      </div>
+    </section>
+
+    <!-- COFFEE -->
+    <section class="section" id="coffee">
+      <h3>☕ 커피 <span class="hint">Coffee</span></h3>
+
+      <details open>
+        <summary>아메리카노 / 디카페인</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item">
+              <div class="left">
+                <div class="name">아메리카노</div>
+                <div class="desc">샷추가: HOT 4,800 / ICE 5,000</div>
+              </div>
+              <div class="price">HOT 3,800 · ICE 4,000</div>
+            </div>
+            <div class="item">
+              <div class="left">
+                <div class="name">디카페인 아메리카노</div>
+              </div>
+              <div class="price">HOT 6,000 · ICE 6,100</div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>라떼</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">카페라떼</div></div><div class="price">HOT 5,300 · ICE 5,500</div></div>
+            <div class="item"><div class="left"><div class="name">바닐라라떼</div></div><div class="price">HOT 5,800 · ICE 6,000</div></div>
+            <div class="item"><div class="left"><div class="name">헤이즐넛라떼</div></div><div class="price">HOT 5,800 · ICE 6,000</div></div>
+            <div class="item"><div class="left"><div class="name">고구마라떼</div></div><div class="price">HOT 6,000 · ICE 6,100</div></div>
+            <div class="item"><div class="left"><div class="name">말차라떼(제주)</div></div><div class="price">HOT 6,800 · ICE 7,000</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>달달 / 스페셜</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">카페모카</div></div><div class="price">HOT 5,800 · ICE 6,000</div></div>
+            <div class="item"><div class="left"><div class="name">민트 카페모카</div></div><div class="price">HOT 5,800 · ICE 6,000</div></div>
+            <div class="item"><div class="left"><div class="name">화이트 카페모카</div></div><div class="price">HOT 5,800 · ICE 6,000</div></div>
+            <div class="item"><div class="left"><div class="name">비엔나커피</div></div><div class="price">HOT 5,800 · ICE 6,000</div></div>
+            <div class="item"><div class="left"><div class="name">카라멜 마끼아또</div></div><div class="price">HOT 5,800 · ICE 6,000</div></div>
+            <div class="item"><div class="left"><div class="name">카푸치노</div></div><div class="price">HOT 5,600 · ICE 5,800</div></div>
+            <div class="item"><div class="left"><div class="name">바닐라 카푸치노</div></div><div class="price">HOT 5,900 · ICE 6,100</div></div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- NON-COFFEE -->
+    <section class="section" id="noncoffee">
+      <h3>🧊 논커피 / 에이드</h3>
+      <div class="cards">
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="name">에이드</div>
+              <div class="desc">레몬 · 블루레몬 · 딸기 · 망고 · 체리</div>
+            </div>
+            <div class="price">6,300</div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="card"><div class="row"><div><div class="name">체리콕</div></div><div class="price">6,300</div></div></div>
+          <div class="card"><div class="row"><div><div class="name">레몬콕</div></div><div class="price">6,300</div></div></div>
+        </div>
+        <div class="grid2">
+          <div class="card"><div class="row"><div><div class="name">복숭아 아이스티</div></div><div class="price">5,500</div></div></div>
+          <div class="card"><div class="row"><div><div class="name">아샷추</div><div class="desc">아이스티 + 샷</div></div><div class="price">6,000</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEA -->
+    <section class="section" id="tea">
+      <h3>🍵 티 / 허브티</h3>
+      <details open>
+        <summary>티/허브 (기본)</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">국화 · 녹차 · 얼그레이 · 캐모마일 · 페퍼민트 · 라벤더</div></div><div class="price">HOT 5,000 · ICE 5,100</div></div>
+            <div class="item"><div class="left"><div class="name">오미자 · 유자</div></div><div class="price">HOT 5,100 · ICE 5,300</div></div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- MILK/CHOCO -->
+    <section class="section" id="milk">
+      <h3>🥛 밀크 / 초코</h3>
+      <div class="cards">
+        <div class="grid2">
+          <div class="card"><div class="row"><div><div class="name">우유</div></div><div class="price">HOT 5,000 · ICE 5,500</div></div></div>
+          <div class="card"><div class="row"><div><div class="name">민트초코밀크</div></div><div class="price">HOT 5,800 · ICE 6,000</div></div></div>
+        </div>
+        <div class="grid2">
+          <div class="card"><div class="row"><div><div class="name">핫초코</div></div><div class="price">HOT 5,800</div></div></div>
+          <div class="card"><div class="row"><div><div class="name">아이스초코</div></div><div class="price">ICE 6,000</div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHAKE & SMOOTHIE -->
+    <section class="section" id="shake">
+      <h3>🧋 쉐이크 / 스무디</h3>
+      <details open>
+        <summary>쉐이크</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">밀크 · 초코 · 말차</div></div><div class="price">7,000</div></div>
+            <div class="item"><div class="left"><div class="name">민트초코 · 민트바닐라</div></div><div class="price">7,300</div></div>
+            <div class="item"><div class="left"><div class="name">쿠키 · 말차쿠키</div></div><div class="price">7,500</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>스무디</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">딸기 · 망고 · 천혜향</div></div><div class="price">7,000</div></div>
+            <div class="item"><div class="left"><div class="name">플레인 요거트</div></div><div class="price">6,500</div></div>
+            <div class="item"><div class="left"><div class="name">딸기 요거트 · 망고 요거트</div></div><div class="price">7,500</div></div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- JUICE -->
+    <section class="section" id="juice">
+      <h3>🍓 주스 / 건강음료</h3>
+      <div class="cards">
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="name">생과일 주스</div>
+              <div class="desc">딸기 7,000 · 바나나 6,800 · 딸기바나나 7,000 · 아몬드바나나 7,000</div>
+            </div>
+            <div class="price">—</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="name">생 토마토주스</div>
+              <div class="desc">해장용 · 인기</div>
+            </div>
+            <div class="price">7,500</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESSERT -->
+    <section class="section" id="dessert">
+      <h3>🧇 디저트</h3>
+
+      <details open>
+        <summary>벨기에 와플</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">벨기에 수제 와플</div><div class="desc">와플 4조각 + 생크림 2 + 메이플시럽</div></div><div class="price">12,900</div></div>
+            <div class="item"><div class="left"><div class="name">커스텀 와플 패키지</div><div class="desc">와플 4조각 / 토핑 선택</div></div><div class="price">11,500~</div></div>
+            <div class="item"><div class="left"><div class="name">벨기에 스페셜 와플 세트</div><div class="desc">와플 4조각 + 생크림 2 + 바닐라 아이스크림</div></div><div class="price">15,900</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>빙수 (1인분)</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">옛날 팥빙수 (1리터)</div></div><div class="price">13,900</div></div>
+            <div class="item"><div class="left"><div class="name">초코빙수 (1리터)</div></div><div class="price">13,900</div></div>
+            <div class="item"><div class="left"><div class="name">망고치즈빙수</div></div><div class="price">13,900</div></div>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>베이커리</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">에그마요 샌드위치</div></div><div class="price">6,400</div></div>
+            <div class="item"><div class="left"><div class="name">구운 식빵 8P</div><div class="desc">생크림 포함</div></div><div class="price">5,800</div></div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- FOOD -->
+    <section class="section" id="food">
+      <h3>🍜 식사 / 분식</h3>
+      <details open>
+        <summary>식사</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">짜파구리</div><div class="desc">떡 + 후라이</div></div><div class="price">6,300</div></div>
+            <div class="item"><div class="left"><div class="name">파기름 김치볶음밥</div><div class="desc">후라이 + 치즈 · 1인(300g)</div></div><div class="price">7,300</div></div>
+          </div>
+        </div>
+      </details>
+      <details>
+        <summary>분식 / 간식</summary>
+        <div class="details-body">
+          <div class="list">
+            <div class="item"><div class="left"><div class="name">국물 떡볶이 (칼집떡볶이)</div></div><div class="price">6,300</div></div>
+            <div class="item"><div class="left"><div class="name">찜질방 구운 계란</div><div class="desc">5알</div></div><div class="price">3,500</div></div>
+            <div class="item"><div class="left"><div class="name">고구마 스틱</div><div class="desc">대용량 1리터</div></div><div class="price">6,300</div></div>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <footer>
+      <div>※ 가격 단위: 원(₩) / 매장 상황에 따라 일부 품절 또는 변경될 수 있습니다.</div>
+      <div>※ 문의가 필요하면 직원에게 말씀해 주세요.</div>
+    </footer>
+  </main>
+</body>
+</html>
